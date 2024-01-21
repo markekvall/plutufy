@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Ratios Bar Charts</title>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Financial Ratios Bar Charts</h1>
+
+    <div id="chartsContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('http://localhost:5000/api/calculated-data')
+                .then(response => response.json())
+                .then(data => {
+                    var labels = data.financial_ratios[0].index;  // Assuming all ratios have the same dates
+    
+                    data.financial_ratios.forEach(ratio => {
+                        var chartContainer = document.createElement('div');
+                        chartContainer.className = 'chart-container';
+                        document.getElementById('chartsContainer').appendChild(chartContainer);
+
+                        var canvas = document.createElement('canvas');
+                        chartContainer.appendChild(canvas);
+
+                        var ctx = canvas.getContext('2d');
+
+                        // Convert data values from strings to numbers
+                        var numericData = ratio.data.map(value => parseFloat(value));
+
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: ratio.name || 'Unnamed Ratio',
+                                    data: numericData,
+                                    backgroundColor: 'rgba(0, 0, 128, 0.2)',
+                                    borderColor: 'rgba(0, 0, 128, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+    </script>
+</body>
+</html>

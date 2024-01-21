@@ -1,22 +1,35 @@
 from plutufy.application.business_logic.controller import Controller
 from plutufy.data_access.yfinance_client import YFinanceClient
+from flask import Flask, render_template, jsonify
+from plutufy.domain.models.stock_statement import StockStatement
 import yfinance as yf
 import pandas as pd
 
-def main():
-    stock_ticker: str = "NIBE-B.ST"
+app = Flask(__name__, template_folder=".")
+
+@app.route('/api/calculated-data')
+def api_calculated_data():
+    calculated_data = {'labels': ['A', 'B', 'C', 'D', 'E'],
+                    'values': [30, 45, 12, 60, 25]}
+    
+    stock_ticker: str = "AAPL"
 
     yf_client: YFinanceClient = YFinanceClient(stock_ticker)
     stock_df: pd.DataFrame = yf_client.get_ticker()
-    #controller: Controller = Controller()
-    #controller.process_data(stock_df=stock_df)
-    ebit = stock_df.financials.loc['EBIT']
-    total_assets = stock_df.balance_sheet.loc['Total Assets']
-    current_liabilities = stock_df.balance_sheet.loc['Current Liabilities']
+    controller: Controller = Controller()
+    stock_statement: str = controller.process_data(stock_df=stock_df, stock_ticker=stock_ticker)
+    print(stock_statement.get_data(as_text=True))
 
-    print(ebit/(total_assets - current_liabilities))
+    #return jsonify(calculated_data)
+    return stock_statement.get_data(as_text=True)
+
+@app.route('/')
+def main_route():
+
+
+    return render_template('index2.html')
 
 
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)

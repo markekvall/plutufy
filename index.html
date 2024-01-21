@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Flask App</title>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Welcome to My Flask App</h1>
+
+    <!-- Canvas for the Chart -->
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+    <script>
+        // Your JavaScript code for creating the chart will go here
+    
+        // This event listener ensures that the DOM (Document Object Model) is fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+    
+            // Fetch data from the Flask backend API endpoint '/api/data'
+            fetch('http://localhost:5000/api/calculated-data')
+                .then(response => response.json())  // Parse the response as JSON
+                .then(data => {
+    
+                    // Use the fetched data to update the chart
+    
+                    // Get the 2D rendering context of the canvas with id 'myChart'
+                    var ctx = document.getElementById('myChart').getContext('2d');
+    
+                    // Create a new Chart instance with the fetched data
+                    var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Calculated Data',
+                            data: data.values,
+                            backgroundColor: 'rgba(0, 0, 128, 0.2)',
+                            borderColor: 'rgba(0, 0, 128, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

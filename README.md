@@ -1,0 +1,1 @@
+todo: add calculator, restructure code. fix frontend.
